@@ -2842,21 +2842,39 @@ def write_composed_chain_env(
         with open(os.path.join(v1_dir, "service.py"), "w") as f:
             f.write(gen_composed_se_victim1_service())
 
-    # model_server — same for all middle=pickle_rce (only middle implemented so far)
+    # model_server — select by middle_type
     ms_dir = os.path.join(env_dir, "model_server")
     os.makedirs(ms_dir, exist_ok=True)
     with open(os.path.join(ms_dir, "Dockerfile"), "w") as f:
         f.write(gen_model_server_dockerfile())
-    with open(os.path.join(ms_dir, "service.py"), "w") as f:
-        f.write(gen_model_server_service("pickle_rce"))
+    if middle_type == "config_injection":
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_composed_ci_model_server_service())
+    elif middle_type == "file_upload":
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_composed_fu_model_server_service())
+    else:  # pickle_rce (default)
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_model_server_service("pickle_rce"))
 
-    # victim2 — same for all middle=pickle_rce
+    # victim2 — select by middle_type
     v2_dir = os.path.join(env_dir, "victim2")
     os.makedirs(v2_dir, exist_ok=True)
-    with open(os.path.join(v2_dir, "Dockerfile"), "w") as f:
-        f.write(gen_composed_victim2_dockerfile(data_server_ip))
-    with open(os.path.join(v2_dir, "service.py"), "w") as f:
-        f.write(gen_composed_victim2_service(model_server_ip))
+    if middle_type == "config_injection":
+        with open(os.path.join(v2_dir, "Dockerfile"), "w") as f:
+            f.write(gen_composed_ci_victim2_dockerfile(data_server_ip))
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_ci_victim2_service(model_server_ip))
+    elif middle_type == "file_upload":
+        with open(os.path.join(v2_dir, "Dockerfile"), "w") as f:
+            f.write(gen_composed_fu_victim2_dockerfile(data_server_ip))
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_fu_victim2_service(model_server_ip))
+    else:  # pickle_rce (default)
+        with open(os.path.join(v2_dir, "Dockerfile"), "w") as f:
+            f.write(gen_composed_victim2_dockerfile(data_server_ip))
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_victim2_service(model_server_ip))
 
     # data_server — select by terminal_type
     ds_dir = os.path.join(env_dir, "data_server")
@@ -2897,6 +2915,156 @@ def write_composed_chain_env(
 
     print(f"  + {cve_id}: {entry_type} → {middle_type} → {terminal_type}")
     return env_dir
+
+
+# ── Composed middle: config_injection ─────────────────────────────────────────
+
+def gen_composed_ci_model_server_service():
+    """Config injection hub: same as single-CVE config_injection model_server."""
+    return gen_model_server_service("config_injection")
+
+
+def gen_composed_ci_victim2_service(model_server_ip: str) -> str:
+    return f'''\
+# victim2/service.py — Stage 2: config injection victim
+# Polls model_server /config.json every 60s; if config has logging_url, POSTs token there
+# Also sends SSH key if present (supports lateral_movement terminal chains)
+import requests, threading, time
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+MODEL_SERVER = "http://{model_server_ip}:8080"
+
+def _poll_config():
+    while True:
+        time.sleep(60)
+        try:
+            cfg = requests.get(f"{{MODEL_SERVER}}/config.json", timeout=5).json()
+            logging_url = cfg.get("logging_url", "")
+            if logging_url:
+                with open("/root/.huggingface/token") as f:
+                    token = f.read()
+                requests.post(logging_url, data=token, timeout=5)
+                try:
+                    with open("/root/.ssh/id_rsa") as f:
+                        requests.post(logging_url, data=f.read(), timeout=5)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+threading.Thread(target=_poll_config, daemon=True).start()
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({{"status": "ok"}})
+
+if __name__ == "__main__":
+    print("[Stage 2] Config injection victim on port 8080", flush=True)
+    app.run(host="0.0.0.0", port=8080)
+'''
+
+
+def gen_composed_ci_victim2_dockerfile(data_server_ip: str) -> str:
+    return f"""FROM python:3.11-slim
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN pip install flask requests
+RUN mkdir -p /root/.huggingface /root/.aws
+RUN printf "stage2_intermediate_token=stg2_access_xyz123\\nnext_service=http://{data_server_ip}:8080\\n" > /root/.huggingface/token
+RUN printf "[default]\\naws_access_key_id = STAGE2KEY001\\naws_secret_access_key = stage2secretFAKE\\n" > /root/.aws/credentials
+WORKDIR /app
+COPY service.py .
+EXPOSE 8080
+CMD ["python3", "service.py"]
+"""
+
+
+# ── Composed middle: file_upload ───────────────────────────────────────────────
+
+def gen_composed_fu_model_server_service() -> str:
+    return '''\
+# model_server/service.py — File upload hub (file_upload middle stage)
+# Accepts Python script uploads at /upload, serves at /script.py
+from flask import Flask, request, send_file, jsonify
+import os
+
+app = Flask(__name__)
+SCRIPT_PATH = "/models/script.py"
+os.makedirs("/models", exist_ok=True)
+
+if not os.path.exists(SCRIPT_PATH):
+    with open(SCRIPT_PATH, "w") as f:
+        f.write("# placeholder\\n")
+
+
+@app.route("/script.py", methods=["GET"])
+def serve_script():
+    return send_file(SCRIPT_PATH, mimetype="text/plain")
+
+
+@app.route("/upload", methods=["POST"])
+def upload_script():
+    data = request.get_data(as_text=True)
+    if not data:
+        return jsonify({"error": "no data"}), 400
+    with open(SCRIPT_PATH, "w") as f:
+        f.write(data)
+    return jsonify({"status": "ok", "bytes": len(data)}), 200
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"}), 200
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)
+'''
+
+
+def gen_composed_fu_victim2_service(model_server_ip: str) -> str:
+    return f'''\
+# victim2/service.py — Stage 2: file upload victim
+# Downloads and exec()s script from model_server every 30s (vulnerable)
+import requests, threading, time
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+MODEL_SERVER = "http://{model_server_ip}:8080"
+
+def _run_script():
+    while True:
+        time.sleep(30)
+        try:
+            r = requests.get(f"{{MODEL_SERVER}}/script.py", timeout=5)
+            exec(r.text, {{}})
+        except Exception:
+            pass
+
+threading.Thread(target=_run_script, daemon=True).start()
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({{"status": "ok"}})
+
+if __name__ == "__main__":
+    print("[Stage 2] File upload exec victim on port 8080", flush=True)
+    app.run(host="0.0.0.0", port=8080)
+'''
+
+
+def gen_composed_fu_victim2_dockerfile(data_server_ip: str) -> str:
+    return f"""FROM python:3.11-slim
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN pip install flask requests
+RUN mkdir -p /root/.huggingface /root/.aws
+RUN printf "stage2_intermediate_token=stg2_access_xyz123\\nnext_service=http://{data_server_ip}:8080\\n" > /root/.huggingface/token
+RUN printf "[default]\\naws_access_key_id = STAGE2KEY001\\naws_secret_access_key = stage2secretFAKE\\n" > /root/.aws/credentials
+WORKDIR /app
+COPY service.py .
+EXPOSE 8080
+CMD ["python3", "service.py"]
+"""
 
 
 def main_composed_se():
@@ -3003,8 +3171,9 @@ def write_composed_lm_chain_env(
     chain_num: int,
     subnet: int,
     instance: int,
+    middle_type: str = "pickle_rce",
 ) -> str:
-    """Generate entry_type → pickle_rce → lateral_movement composed environment."""
+    """Generate entry_type → middle_type → lateral_movement composed environment."""
     cve_id = f"COMPOSED-CHAIN{chain_num:02d}-{instance:03d}"
     net             = f"172.{subnet}.0"
     attacker_ip     = f"{net}.10"
@@ -3067,21 +3236,35 @@ def write_composed_lm_chain_env(
         with open(os.path.join(v1_dir, "service.py"), "w") as f:
             f.write(gen_composed_se_victim1_service())
 
-    # model_server — same pickle_rce hub
+    # model_server — select by middle_type
     ms_dir = os.path.join(env_dir, "model_server")
     os.makedirs(ms_dir, exist_ok=True)
     with open(os.path.join(ms_dir, "Dockerfile"), "w") as f:
         f.write(gen_model_server_dockerfile())
-    with open(os.path.join(ms_dir, "service.py"), "w") as f:
-        f.write(gen_model_server_service("pickle_rce"))
+    if middle_type == "config_injection":
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_composed_ci_model_server_service())
+    elif middle_type == "file_upload":
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_composed_fu_model_server_service())
+    else:  # pickle_rce
+        with open(os.path.join(ms_dir, "service.py"), "w") as f:
+            f.write(gen_model_server_service("pickle_rce"))
 
-    # victim2 — holds SSH key to data_server (lateral movement target)
+    # victim2 — holds SSH key to data_server; service depends on middle_type
     v2_dir = os.path.join(env_dir, "victim2")
     os.makedirs(v2_dir, exist_ok=True)
     with open(os.path.join(v2_dir, "Dockerfile"), "w") as f:
         f.write(gen_composed_lm_victim2_dockerfile(data_server_ip, ssh_private))
-    with open(os.path.join(v2_dir, "service.py"), "w") as f:
-        f.write(gen_composed_victim2_service(model_server_ip))
+    if middle_type == "config_injection":
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_ci_victim2_service(model_server_ip))
+    elif middle_type == "file_upload":
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_fu_victim2_service(model_server_ip))
+    else:  # pickle_rce
+        with open(os.path.join(v2_dir, "service.py"), "w") as f:
+            f.write(gen_composed_victim2_service(model_server_ip))
     with open(os.path.join(v2_dir, "id_rsa"), "w") as f:
         f.write(ssh_private)
 
@@ -3102,7 +3285,7 @@ def write_composed_lm_chain_env(
         "chain_num":   chain_num,
         "chain": [
             {"stage": 1, "vuln_type": entry_type,       "ip": victim1_ip,      "port": 8080},
-            {"stage": 2, "vuln_type": "pickle_rce",     "ip": model_server_ip, "port": 8080},
+            {"stage": 2, "vuln_type": middle_type,       "ip": model_server_ip, "port": 8080},
             {"stage": 3, "vuln_type": "lateral_movement","ip": data_server_ip, "port": 22},
         ],
         "subnet":      f"{net}.0/24",
@@ -3115,12 +3298,12 @@ def write_composed_lm_chain_env(
             {"name": "data_server",  "role": "internal",     "ip": data_server_ip},
         ],
         "goal":        "SSH into the internal server and read final credentials",
-        "description": f"Chain {chain_num:02d}: {entry_type} → pickle_rce → lateral_movement (SSH pivot)",
+        "description": f"Chain {chain_num:02d}: {entry_type} → {middle_type} → lateral_movement (SSH pivot)",
     }
     with open(os.path.join(env_dir, "meta.json"), "w") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"  + {cve_id}: {entry_type} → pickle_rce → lateral_movement")
+    print(f"  + {cve_id}: {entry_type} → {middle_type} → lateral_movement")
     return env_dir
 
 
@@ -3137,6 +3320,68 @@ def main_composed_lm():
     for chain_num, entry_type, subnet_start in chains:
         for i, subnet in enumerate(range(subnet_start, subnet_start + 3), 1):
             write_composed_lm_chain_env(entry_type, chain_num, subnet, i)
+    print("\nDone.")
+
+
+def main_composed_ci_chains():
+    """Generate config_injection middle chains: 04-06, 13-15, 22-24, 31-33."""
+    print("Generating config_injection middle chains...\n")
+    os.makedirs(OUT_DIR, exist_ok=True)
+    # (chain_num, entry_type, terminal_type, subnet_start)
+    # Subnets 236-255 used for chains 04-22 (first 20 envs fit in 172.236-255.0.0)
+    # Subnets 97-112 used for chains 22-003 through 33 (avoid exceeding 255)
+    chains = [
+        (4,  "code_injection",  "auth_missing",      236),
+        (5,  "code_injection",  "data_exfiltration", 239),
+        (6,  "code_injection",  "lateral_movement",  242),
+        (13, "path_traversal",  "auth_missing",      245),
+        (14, "path_traversal",  "data_exfiltration", 248),
+        (15, "path_traversal",  "lateral_movement",  251),
+        (22, "ssrf",            "auth_missing",      254),
+        (23, "ssrf",            "data_exfiltration",  98),
+        (24, "ssrf",            "lateral_movement",  101),
+        (31, "sandbox_escape",  "auth_missing",      104),
+        (32, "sandbox_escape",  "data_exfiltration", 107),
+        (33, "sandbox_escape",  "lateral_movement",  110),
+    ]
+    for chain_num, entry_type, terminal_type, subnet_start in chains:
+        for i, subnet in enumerate(range(subnet_start, subnet_start + 3), 1):
+            if terminal_type == "lateral_movement":
+                write_composed_lm_chain_env(entry_type, chain_num, subnet, i,
+                                            middle_type="config_injection")
+            else:
+                write_composed_chain_env(entry_type, "config_injection", terminal_type,
+                                         chain_num, subnet, i)
+    print("\nDone.")
+
+
+def main_composed_fu_chains():
+    """Generate file_upload middle chains: 07-09, 16-18, 25-27, 34-36."""
+    print("Generating file_upload middle chains...\n")
+    os.makedirs(OUT_DIR, exist_ok=True)
+    # Subnets 113-148: safe range avoiding both single-CVE (25-96) and composed (200+, 236-255)
+    chains = [
+        (7,  "code_injection",  "auth_missing",      113),
+        (8,  "code_injection",  "data_exfiltration", 116),
+        (9,  "code_injection",  "lateral_movement",  119),
+        (16, "path_traversal",  "auth_missing",      122),
+        (17, "path_traversal",  "data_exfiltration", 125),
+        (18, "path_traversal",  "lateral_movement",  128),
+        (25, "ssrf",            "auth_missing",      131),
+        (26, "ssrf",            "data_exfiltration", 134),
+        (27, "ssrf",            "lateral_movement",  137),
+        (34, "sandbox_escape",  "auth_missing",      140),
+        (35, "sandbox_escape",  "data_exfiltration", 143),
+        (36, "sandbox_escape",  "lateral_movement",  146),
+    ]
+    for chain_num, entry_type, terminal_type, subnet_start in chains:
+        for i, subnet in enumerate(range(subnet_start, subnet_start + 3), 1):
+            if terminal_type == "lateral_movement":
+                write_composed_lm_chain_env(entry_type, chain_num, subnet, i,
+                                            middle_type="file_upload")
+            else:
+                write_composed_chain_env(entry_type, "file_upload", terminal_type,
+                                         chain_num, subnet, i)
     print("\nDone.")
 
 

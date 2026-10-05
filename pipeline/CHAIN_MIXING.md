@@ -14,11 +14,11 @@
 | 3 | ssrf | 入口 | 2 个 | ❌ 待实现 |
 | 4 | sandbox_escape | 入口 | 1 个 | ❌ 待实现 |
 | 5 | pickle_rce | 中间 | 21 个 | ✅ 已实现 |
-| 6 | config_injection | 中间 | 3 个 | ❌ 待实现 |
-| 7 | file_upload | 中间 | 1 个 | ❌ 待实现 |
+| 6 | config_injection | 中间 | 3 个 | ✅ 已实现 |
+| 7 | file_upload | 中间 | 1 个 | ✅ 已实现 |
 | 8 | auth_missing | 终点 | 1 个 | ✅ 已实现 |
-| 9 | data_exfiltration | 终点 | 1 个 | ❌ 待实现 |
-| 10 | lateral_movement | 终点 | 6 个 | ❌ 待实现 |
+| 9 | data_exfiltration | 终点 | 1 个 | ✅ 已实现 |
+| 10 | lateral_movement | 终点 | 6 个 | ✅ 已实现 |
 
 ---
 
@@ -185,4 +185,4 @@
 | data_exfiltration 终点服务 | 终点 | ✅ 已实现，待验证 |
 | lateral_movement 终点服务 | 终点 | ❌ 待实现 |
 
-**已实现：7/10 | 待实现：3/10**
+**已实现：10/10 | 待实现：0/10**
