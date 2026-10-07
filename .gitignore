@@ -2,6 +2,7 @@
 .claude/
 
 # Chinese documentation (working notes, not source)
+pipeline/CHAIN_MIXING.md
 plan.md
 standalone_report.md
 report.md
