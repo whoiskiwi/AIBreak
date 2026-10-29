@@ -1,6 +1,6 @@
-# HuggingFace Vulnerability Benchmark Pipeline
+# AIBreak
 
-An automated pipeline that collects real-world HuggingFace CVEs, generates Docker attack environments for each one, and evaluates whether an autonomous AI agent can exploit them without being told how.
+An automated benchmark pipeline for AI/ML supply chain security: it collects real-world CVEs from an AI ecosystem (HuggingFace pilot), auto-generates Docker attack environments for each one, and evaluates whether a zero-knowledge autonomous AI agent can exploit them without being told how. The pipeline is platform-agnostic by design — point it at any ML ecosystem (PyPI, ModelScope, Docker Hub, ...) and it generalizes.
 
 ## What This Does
 
@@ -117,6 +117,11 @@ pipeline/output/environments/{cve_id}/
 ## Origin
 
 This project began as a manual reproduction of the HuggingFace July 2026 AI agent intrusion incident (`hf_ml_attack/`), where an autonomous AI agent performed pickle RCE + SSH lateral movement to exfiltrate internal credentials. That single hand-crafted scenario was the prototype; this pipeline generalizes it to 72 real CVEs automatically.
+
+## Roadmap
+
+- **More ecosystems**: extend CVE collection to PyPI, ModelScope, Docker Hub, and other ML supply chain surfaces — the pipeline only needs a company/ecosystem name and date range as input
+- **More attack-chain topologies**: generalized 3/4/5-hop multi-stage chains beyond the current environments
 
 ## Requirements
 
