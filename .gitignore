@@ -3,9 +3,9 @@
 
 # Chinese documentation (working notes, not source)
 pipeline/CHAIN_MIXING.md
-plan.md
-standalone_report.md
-report.md
+/plan.md
+/standalone_report.md
+/report.md
 pipeline/plan.md
 pipeline/LIMITATIONS.md
 pipeline/COMMANDS_GUIDE.md
