@@ -1,0 +1,952 @@
+{
+  "fetched_at": "2026-10-29T07:11:57.273201+00:00",
+  "source_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=diffusers&resultsPerPage=2000&startIndex=0",
+  "status_code": 200,
+  "data": {
+    "resultsPerPage": 5,
+    "startIndex": 0,
+    "totalResults": 5,
+    "format": "NVD_CVE",
+    "version": "2.0",
+    "timestamp": "2026-10-29T07:11:57.015",
+    "vulnerabilities": [
+      {
+        "cve": {
+          "id": "CVE-2025-14922",
+          "sourceIdentifier": "zdi-disclosures@trendmicro.com",
+          "published": "2025-12-23T21:15:47.477",
+          "lastModified": "2026-10-19T22:10:00.130",
+          "vulnStatus": "Deferred",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Hugging Face Diffusers CogView4 Deserialization of Untrusted Data Remote Code Execution Vulnerability. This vulnerability allows remote attackers to execute arbitrary code on affected installations of Hugging Face Diffusers. User interaction is required to exploit this vulnerability in that the target must visit a malicious page or open a malicious file.\n\nThe specific flaw exists within the parsing of checkpoints. The issue results from the lack of proper validation of user-supplied data, which can result in deserialization of untrusted data. An attacker can leverage this vulnerability to execute code in the context of the current process. Was ZDI-CAN-27424."
+            },
+            {
+              "lang": "es",
+              "value": "Vulnerabilidad de deserialización de datos no confiables y ejecución remota de código (RCE) en Hugging Face Diffusers CogView4. Esta vulnerabilidad permite a atacantes remotos ejecutar código arbitrario en instalaciones afectadas de Hugging Face Diffusers. Se requiere interacción del usuario para explotar esta vulnerabilidad, ya que el objetivo debe visitar una página maliciosa o abrir un archivo malicioso.\\n\\nEl defecto específico existe dentro del análisis de checkpoints. El problema resulta de la falta de validación adecuada de los datos suministrados por el usuario, lo que puede provocar la deserialización de datos no confiables. Un atacante puede aprovechar esta vulnerabilidad para ejecutar código en el contexto del proceso actual. Fue ZDI-CAN-27424."
+            }
+          ],
+          "affected": [
+            {
+              "source": "zdi-disclosures@trendmicro.com",
+              "affectedData": [
+                {
+                  "vendor": "Hugging Face",
+                  "product": "Diffusers",
+                  "defaultStatus": "unknown",
+                  "versions": [
+                    {
+                      "version": "22a452a526660363b57216cd011ce75345382d02",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV30": [
+              {
+                "source": "zdi-disclosures@trendmicro.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.0",
+                  "vectorString": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                  "baseScore": 7.8,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "LOCAL",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 1.8,
+                "impactScore": 5.9
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2025-12-26T16:08:29.632458Z",
+                  "id": "CVE-2025-14922",
+                  "options": [
+                    {
+                      "exploitation": "none"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "total"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "zdi-disclosures@trendmicro.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-502"
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://www.zerodayinitiative.com/advisories/ZDI-25-1142/",
+              "source": "zdi-disclosures@trendmicro.com"
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-44513",
+          "sourceIdentifier": "security-advisories@github.com",
+          "published": "2026-05-14T17:16:22.903",
+          "lastModified": "2026-10-26T14:10:00.130",
+          "vulnStatus": "Modified",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Diffusers is the a library for  pretrained diffusion models. Prior to 0.38.0, a trust_remote_code bypass in DiffusionPipeline.from_pretrained allows arbitrary remote code execution despite the user passing trust_remote_code=False (or omitting it, which is the default). The vulnerability has three variants, all sharing the same root cause — the trust_remote_code gate was implemented inside DiffusionPipeline.download() rather than at the actual dynamic-module load site, so any code path that bypassed or short-circuited download() also bypassed the security check. DiffusionPipeline.from_pretrained('repoA', custom_pipeline='attacker/repoB', trust_remote_code=False) — the gate evaluated against repoA's file list rather than repoB's, so repoB's pipeline.py was loaded and executed. DiffusionPipeline.from_pretrained('/local/snapshot', custom_pipeline='attacker/repoB', trust_remote_code=False) — the local-path branch never invoked download(), so the gate was never reached and remote code from repoB executed. DiffusionPipeline.from_pretrained('/local/snapshot', trust_remote_code=False) where the snapshot contains custom component files (e.g. unet/my_unet_model.py) referenced from model_index.json — same root cause; the local path skipped download() and custom component code executed. This vulnerability is fixed in 0.38.0."
+            },
+            {
+              "lang": "es",
+              "value": "Diffusers es la biblioteca para modelos de difusión preentrenados. Antes de la versión 0.38.0, una omisión de ’trust_remote_code’ en DiffusionPipeline.from_pretrained permite la ejecución remota de código arbitraria a pesar de que el usuario pase ’trust_remote_code=False’ (o lo omita, que es el valor predeterminado). La vulnerabilidad tiene tres variantes, todas compartiendo la misma causa raíz - la compuerta de ’trust_remote_code’ se implementó dentro de DiffusionPipeline.download() en lugar de en el sitio real de carga del módulo dinámico, por lo que cualquier ruta de código que omitiera o cortocircuitara download() también omitía la verificación de seguridad. DiffusionPipeline.from_pretrained(’repoA’, custom_pipeline=’atacante/repoB’, trust_remote_code=False) - la compuerta evaluó la lista de archivos de repoA en lugar de la de repoB, por lo que el pipeline.py de repoB fue cargado y ejecutado. DiffusionPipeline.from_pretrained(’/local/snapshot’, custom_pipeline=’atacante/repoB’, trust_remote_code=False) - la rama de ruta local nunca invocó download(), por lo que la compuerta nunca fue alcanzada y el código remoto de repoB se ejecutó. DiffusionPipeline.from_pretrained(’/local/snapshot’, trust_remote_code=False) donde la instantánea contiene archivos de componentes personalizados (p. ej., unet/my_unet_model.py) referenciados desde model_index.json - misma causa raíz; la ruta local omitió download() y el código del componente personalizado se ejecutó. Esta vulnerabilidad está corregida en la versión 0.38.0."
+            }
+          ],
+          "affected": [
+            {
+              "source": "security-advisories@github.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "diffusers",
+                  "versions": [
+                    {
+                      "version": "< 0.38.0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c",
+              "affectedData": [
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI 3.4",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://catalog.redhat.com/software/containers/",
+                  "packageName": "rhoai/odh-th06-cuda130-torch210-py312-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai:3.4::el9"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1787077779",
+                      "lessThan": "*",
+                      "versionType": "rpm",
+                      "status": "unaffected"
+                    }
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI 3.4",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://catalog.redhat.com/software/containers/",
+                  "packageName": "rhoai/odh-th06-rocm64-torch291-py312-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai:3.4::el9"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1787076481",
+                      "lessThan": "*",
+                      "versionType": "rpm",
+                      "status": "unaffected"
+                    }
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI 3.4",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://catalog.redhat.com/software/containers/",
+                  "packageName": "rhoai/odh-training-cuda128-torch29-py312-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai:3.4::el9"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1786611803",
+                      "lessThan": "*",
+                      "versionType": "rpm",
+                      "status": "unaffected"
+                    }
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI 3.4",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://catalog.redhat.com/software/containers/",
+                  "packageName": "rhoai/odh-training-rocm64-torch29-py312-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai:3.4::el9"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1786611435",
+                      "lessThan": "*",
+                      "versionType": "rpm",
+                      "status": "unaffected"
+                    }
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaiis/vllm-cpu-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "unaffected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaiis/vllm-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "unaffected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaiis/vllm-rocm-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaiis/vllm-tpu-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaii/vllm-cpu-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat AI Inference Server",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhaii/vllm-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:ai_inference_server:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat Enterprise Linux AI (RHEL AI) 3",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhelai3/bootc-aws-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:enterprise_linux_ai:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat Enterprise Linux AI (RHEL AI) 3",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhelai3/bootc-azure-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:enterprise_linux_ai:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat Enterprise Linux AI (RHEL AI) 3",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhelai3/bootc-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:enterprise_linux_ai:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat Enterprise Linux AI (RHEL AI) 3",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhelai3/bootc-gcp-cuda-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:enterprise_linux_ai:3"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI (RHOAI)",
+                  "defaultStatus": "affected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhoai/odh-openvino-model-server-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai"
+                  ]
+                },
+                {
+                  "vendor": "Red Hat",
+                  "product": "Red Hat OpenShift AI (RHOAI)",
+                  "defaultStatus": "unaffected",
+                  "collectionURL": "https://access.redhat.com/downloads/content/package-browser/",
+                  "packageName": "rhoai/odh-th06-cuda130-torch291-py312-rhel9",
+                  "cpes": [
+                    "cpe:/a:redhat:openshift_ai"
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV31": [
+              {
+                "source": "security-advisories@github.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                  "baseScore": 8.8,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 5.9
+              },
+              {
+                "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                  "baseScore": 8.8,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 5.9
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-05-14T17:38:51.150920Z",
+                  "id": "CVE-2026-44513",
+                  "options": [
+                    {
+                      "exploitation": "none"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "total"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-94"
+                }
+              ]
+            },
+            {
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-358"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:diffusers:*:*:*:*:*:python:*:*",
+                      "versionEndExcluding": "0.38.0",
+                      "matchCriteriaId": "D7F2A2AE-D122-46BA-BD64-67DCF4C22677"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/diffusers/security/advisories/GHSA-98h9-4798-4q5v",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Exploit",
+                "Mitigation",
+                "Vendor Advisory"
+              ]
+            },
+            {
+              "url": "https://access.redhat.com/errata/RHSA-2026:60520",
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c"
+            },
+            {
+              "url": "https://access.redhat.com/security/cve/CVE-2026-44513",
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c"
+            },
+            {
+              "url": "https://bugzilla.redhat.com/show_bug.cgi?id=2477507",
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c"
+            },
+            {
+              "url": "https://security.access.redhat.com/data/csaf/v2/vex/2026/cve-2026-44513.json",
+              "source": "0b0ca135-0b70-47e7-9f44-1890c2a1c46c"
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-44827",
+          "sourceIdentifier": "security-advisories@github.com",
+          "published": "2026-05-14T17:16:23.500",
+          "lastModified": "2026-10-26T14:10:00.130",
+          "vulnStatus": "Analyzed",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Diffusers is the a library for  pretrained diffusion models. Prior to 0.38.0, diffusers 0.37.0 allows remote code execution without the trust_remote_code=True safeguard when loading pipelines from Hugging Face Hub repositories. The _resolve_custom_pipeline_and_cls function in pipeline_loading_utils.py performs string interpolation on the custom_pipeline parameter using f\"{custom_pipeline}.py\". When custom_pipeline is not supplied by the user, it defaults to None, which Python interpolates as the literal string \"None.py\". If an attacker publishes a Hub repository containing a file named None.py with a class that subclasses DiffusionPipeline, the file is automatically downloaded and executed during a standard DiffusionPipeline.from_pretrained() call with no additional keyword arguments. The trust_remote_code check in DiffusionPipeline.download() is bypassed because it evaluates custom_pipeline is not None as False (since the kwarg was never supplied), while the downstream code path that actually loads the module resolves the None value into a valid filename. An attacker can achieve silent arbitrary code execution by publishing a malicious model repository with a None.py file and a standard-looking model_index.json that references a legitimate pipeline class name, requiring only that a victim calls from_pretrained on the repository. This vulnerability is fixed in 0.38.0."
+            },
+            {
+              "lang": "es",
+              "value": "Diffusers es la biblioteca para modelos de difusión preentrenados. Antes de la versión 0.38.0, diffusers 0.37.0 permite la ejecución remota de código sin la salvaguarda trust_remote_code=True al cargar pipelines desde repositorios de Hugging Face Hub. La función _resolve_custom_pipeline_and_cls en pipeline_loading_utils.py realiza interpolación de cadenas en el parámetro custom_pipeline usando f’{custom_pipeline}.py’. Cuando custom_pipeline no es proporcionado por el usuario, su valor predeterminado es None, que Python interpola como la cadena literal ’None.py’. Si un atacante publica un repositorio de Hub que contiene un archivo llamado None.py con una clase que hereda de DiffusionPipeline, el archivo se descarga y ejecuta automáticamente durante una llamada estándar a DiffusionPipeline.from_pretrained() sin argumentos de palabra clave adicionales. La verificación trust_remote_code en DiffusionPipeline.download() se omite porque evalúa custom_pipeline is not None como False (ya que el argumento de palabra clave nunca fue proporcionado), mientras que la ruta de código posterior que realmente carga el módulo resuelve el valor None en un nombre de archivo válido. Un atacante puede lograr la ejecución de código arbitrario silenciosa publicando un repositorio de modelo malicioso con un archivo None.py y un model_index.json de aspecto estándar que referencia un nombre de clase de pipeline legítimo, requiriendo solo que una víctima llame a from_pretrained en el repositorio. Esta vulnerabilidad se corrige en la versión 0.38.0."
+            }
+          ],
+          "affected": [
+            {
+              "source": "security-advisories@github.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "diffusers",
+                  "versions": [
+                    {
+                      "version": "< 0.38.0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV31": [
+              {
+                "source": "security-advisories@github.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                  "baseScore": 8.8,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 5.9
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-05-14T18:00:53.494731Z",
+                  "id": "CVE-2026-44827",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "total"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-94"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:diffusers:*:*:*:*:*:python:*:*",
+                      "versionEndExcluding": "0.38.0",
+                      "matchCriteriaId": "D7F2A2AE-D122-46BA-BD64-67DCF4C22677"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/diffusers/security/advisories/GHSA-j7w6-vpvq-j3gm",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Exploit",
+                "Mitigation",
+                "Vendor Advisory"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/security/advisories/GHSA-j7w6-vpvq-j3gm",
+              "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+              "tags": [
+                "Exploit",
+                "Mitigation",
+                "Vendor Advisory"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-45804",
+          "sourceIdentifier": "security-advisories@github.com",
+          "published": "2026-07-15T17:16:48.310",
+          "lastModified": "2026-10-24T21:10:00.130",
+          "vulnStatus": "Analyzed",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Diffusers is the a library for pretrained diffusion models. Prior to 0.38.0, Diffusers' DiffusionPipeline.from_pretrained flow can bypass the trust_remote_code guard because download() validates model_index.json and custom pipeline code before later loading from a cached folder that can change, allowing a Hub repository with custom .py pipeline code to execute through the custom pipeline flow without passing custom_pipeline or trust_remote_code=True. This issue is fixed in version 0.38.0."
+            },
+            {
+              "lang": "es",
+              "value": "Diffusers es la biblioteca para modelos de difusión preentrenados. Antes de la versión 0.38.0, el flujo DiffusionPipeline.from_pretrained de Diffusers puede eludir la protección trust_remote_code porque download() valida model_index.json y el código de pipeline personalizado antes de cargar posteriormente desde una carpeta en caché que puede cambiar, permitiendo que un repositorio de Hub con código de pipeline .py personalizado se ejecute a través del flujo de pipeline personalizado sin pasar custom_pipeline o trust_remote_code=True. Este problema está solucionado en la versión 0.38.0."
+            }
+          ],
+          "affected": [
+            {
+              "source": "security-advisories@github.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "diffusers",
+                  "versions": [
+                    {
+                      "version": "< 0.38.0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV31": [
+              {
+                "source": "security-advisories@github.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+                  "baseScore": 7.5,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "HIGH",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 1.6,
+                "impactScore": 5.9
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-07-15T17:27:27.543160Z",
+                  "id": "CVE-2026-45804",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "total"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "security-advisories@github.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-367"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:diffusers:*:*:*:*:*:python:*:*",
+                      "versionEndExcluding": "0.38.0",
+                      "matchCriteriaId": "D7F2A2AE-D122-46BA-BD64-67DCF4C22677"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/diffusers/commit/a37f6f8394ac2a7ee8360c3abea811efe54512b1",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Patch"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/issues/13446",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Issue Tracking",
+                "Exploit"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/pull/13448",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Issue Tracking"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/releases/tag/v0.38.0",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Release Notes"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/security/advisories/GHSA-7wx4-6vff-v64p",
+              "source": "security-advisories@github.com",
+              "tags": [
+                "Vendor Advisory",
+                "Exploit"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/issues/13446",
+              "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+              "tags": [
+                "Issue Tracking",
+                "Exploit"
+              ]
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/security/advisories/GHSA-7wx4-6vff-v64p",
+              "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+              "tags": [
+                "Vendor Advisory",
+                "Exploit"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-65920",
+          "sourceIdentifier": "disclosure@vulncheck.com",
+          "published": "2026-07-23T18:17:02.427",
+          "lastModified": "2026-10-24T13:10:00.147",
+          "vulnStatus": "Deferred",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Diffusers through 0.39.0, fixed in commit cee298c, contains a path traversal vulnerability in the _get_checkpoint_shard_files function that allows attackers to read arbitrary files by supplying malicious weight_map values in model index JSON. Attackers can use ../ sequences or absolute paths in weight_map entries to escape the model directory and read safetensors files outside the intended location during model loading."
+            },
+            {
+              "lang": "es",
+              "value": "Diffusers hasta 0.39.0, corregido en el commit cee298c, contiene una vulnerabilidad de salto de ruta en la función _get_checkpoint_shard_files que permite a los atacantes leer archivos arbitrarios al proporcionar valores maliciosos de weight_map en el JSON del índice del modelo. Los atacantes pueden usar secuencias .. /  o rutas absolutas en las entradas de weight_map para escapar del directorio del modelo y leer archivos safetensors fuera de la ubicación prevista durante la carga del modelo."
+            }
+          ],
+          "affected": [
+            {
+              "source": "disclosure@vulncheck.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "diffusers",
+                  "defaultStatus": "unaffected",
+                  "repo": "https://github.com/huggingface/diffusers",
+                  "packageURL": "pkg:pypi/diffusers",
+                  "versions": [
+                    {
+                      "version": "0",
+                      "lessThanOrEqual": "0.39.0",
+                      "versionType": "semver",
+                      "status": "affected"
+                    },
+                    {
+                      "version": "cee298c1f37c439a9a408396b8283a921238a1c6",
+                      "versionType": "git",
+                      "status": "unaffected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV40": [
+              {
+                "source": "disclosure@vulncheck.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "4.0",
+                  "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N/E:X/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+                  "baseScore": 5.3,
+                  "baseSeverity": "MEDIUM",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "attackRequirements": "NONE",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "PASSIVE",
+                  "vulnConfidentialityImpact": "LOW",
+                  "vulnIntegrityImpact": "NONE",
+                  "vulnAvailabilityImpact": "NONE",
+                  "subConfidentialityImpact": "NONE",
+                  "subIntegrityImpact": "NONE",
+                  "subAvailabilityImpact": "NONE",
+                  "exploitMaturity": "NOT_DEFINED",
+                  "confidentialityRequirement": "NOT_DEFINED",
+                  "integrityRequirement": "NOT_DEFINED",
+                  "availabilityRequirement": "NOT_DEFINED",
+                  "modifiedAttackVector": "NOT_DEFINED",
+                  "modifiedAttackComplexity": "NOT_DEFINED",
+                  "modifiedAttackRequirements": "NOT_DEFINED",
+                  "modifiedPrivilegesRequired": "NOT_DEFINED",
+                  "modifiedUserInteraction": "NOT_DEFINED",
+                  "modifiedVulnConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedVulnIntegrityImpact": "NOT_DEFINED",
+                  "modifiedVulnAvailabilityImpact": "NOT_DEFINED",
+                  "modifiedSubConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedSubIntegrityImpact": "NOT_DEFINED",
+                  "modifiedSubAvailabilityImpact": "NOT_DEFINED",
+                  "Safety": "NOT_DEFINED",
+                  "Automatable": "NOT_DEFINED",
+                  "Recovery": "NOT_DEFINED",
+                  "valueDensity": "NOT_DEFINED",
+                  "vulnerabilityResponseEffort": "NOT_DEFINED",
+                  "providerUrgency": "NOT_DEFINED"
+                }
+              }
+            ],
+            "cvssMetricV31": [
+              {
+                "source": "disclosure@vulncheck.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N",
+                  "baseScore": 4.3,
+                  "baseSeverity": "MEDIUM",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "LOW",
+                  "integrityImpact": "NONE",
+                  "availabilityImpact": "NONE"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 1.4
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-07-23T18:19:14.259723Z",
+                  "id": "CVE-2026-65920",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "partial"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "disclosure@vulncheck.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-22"
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/diffusers/commit/cee298c1f37c439a9a408396b8283a921238a1c6",
+              "source": "disclosure@vulncheck.com"
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/issues/14175",
+              "source": "disclosure@vulncheck.com"
+            },
+            {
+              "url": "https://github.com/huggingface/diffusers/pull/14182",
+              "source": "disclosure@vulncheck.com"
+            },
+            {
+              "url": "https://www.vulncheck.com/advisories/diffusers-path-traversal-via-weight-map-arbitrary-file-read",
+              "source": "disclosure@vulncheck.com"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

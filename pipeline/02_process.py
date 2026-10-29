@@ -2,9 +2,24 @@
 02_process.py — Pipeline Step 2: Data Processing and Classification
 Zero LLM, pure rule-based extraction
 
-Reads:  pipeline/output/raw_report.md
+Reads:  pipeline/output/raw_report.md        (auto-collected real CVEs)
+        pipeline/data/overrides.json         (human-maintained additions + corrections)
 Output: pipeline/output/vulns.json  (used by 03_environment_agent)
         pipeline/output/summary.md  (human-readable summary)
+
+The manifest is rebuilt deterministically: given the same raw_report.md and the
+same overrides.json, vulns.json is byte-for-byte identical across runs (sorted by
+CVE id, sorted keys). A sha256 of the output is printed so this can be verified.
+
+Overrides file format (pipeline/data/overrides.json):
+    {
+      "add": [ { ...full vuln object..., "synthetic": true } ],
+      "override": { "CVE-2024-xxxx": { "reproducible": true, ... } }
+    }
+  - "add":      entries not present in raw_report.md (manual or synthetic scenarios).
+                Synthetic scenarios should carry "synthetic": true.
+  - "override": field-level patches merged onto the auto-parsed entry with that id,
+                so manual corrections to real CVEs survive a rebuild.
 
 Usage: python 02_process.py
 """
@@ -12,9 +27,11 @@ Usage: python 02_process.py
 import re
 import json
 import os
+import hashlib
 from collections import Counter
 
 INPUT  = "/Users/chenqi/Desktop/HF_ML/pipeline/output/raw_report.md"
+OVERRIDES      = "/Users/chenqi/Desktop/HF_ML/pipeline/data/overrides.json"
 OUTPUT_JSON    = "/Users/chenqi/Desktop/HF_ML/pipeline/output/vulns.json"
 OUTPUT_SUMMARY = "/Users/chenqi/Desktop/HF_ML/pipeline/output/summary.md"
 
@@ -206,23 +223,87 @@ def parse_report(path: str) -> list:
             "privileges_required":  cvss_fields["privileges_required"],
             "description":          desc,
             "reproducible":         reproducible,
+            "synthetic":            False,
         })
 
     return entries
+
+
+# ── Overrides: non-destructive manual additions and corrections ───────────
+
+def load_overrides(path: str) -> dict:
+    """Load the overrides file. Missing file is fine (returns empty structure)."""
+    if not os.path.exists(path):
+        print(f"No overrides file at {path} (skipping)")
+        return {"add": [], "override": {}}
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    data.setdefault("add", [])
+    data.setdefault("override", {})
+    return data
+
+
+def apply_overrides(entries: list, overrides: dict) -> list:
+    """Merge overrides onto auto-parsed entries without losing manual work.
+
+    - "override": field-level patches merged onto the matching auto-parsed entry.
+    - "add":      full entries appended (manual/synthetic). If an id collides with
+                  an auto-parsed entry, the add-entry replaces it (manual wins).
+    Every entry ends up with an explicit "synthetic" flag.
+    """
+    by_id = {e["cve_id"]: e for e in entries}
+
+    # Field-level patches onto existing auto-parsed entries
+    for cve_id, patch in overrides.get("override", {}).items():
+        if cve_id in by_id:
+            by_id[cve_id].update(patch)
+        else:
+            print(f"[WARN] override for {cve_id} but no such auto-parsed entry; ignored")
+
+    # Full manual/synthetic additions (manual wins on id collision)
+    for add in overrides.get("add", []):
+        cid = add.get("cve_id")
+        if not cid:
+            print(f"[WARN] overrides 'add' entry without cve_id; skipped: {add}")
+            continue
+        entry = dict(add)
+        entry.setdefault("synthetic", False)
+        if cid in by_id:
+            print(f"[INFO] overrides 'add' replaces auto-parsed {cid}")
+        by_id[cid] = entry
+
+    # Ensure every entry carries the synthetic flag
+    for e in by_id.values():
+        e.setdefault("synthetic", False)
+
+    return list(by_id.values())
+
+
+def write_deterministic_json(path: str, entries: list) -> str:
+    """Write vulns.json deterministically (sorted entries + sorted keys) and return its sha256."""
+    ordered = sorted(entries, key=lambda e: e["cve_id"])
+    text = json.dumps(ordered, ensure_ascii=False, indent=2, sort_keys=True)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
 # ── Generate summary ──────────────────────────────────────────
 
 def generate_summary(vulns: list) -> str:
     total        = len(vulns)
+    auto         = [v for v in vulns if not v.get("synthetic")]
+    synthetic    = [v for v in vulns if v.get("synthetic")]
     reproducible = [v for v in vulns if v["reproducible"]]
     types        = Counter(v["type"] for v in vulns)
     severities   = Counter(v["severity"] for v in vulns)
 
+    pct = (len(reproducible) * 100 // total) if total else 0
     lines = [
         f"# Vulnerability Data Summary\n",
-        f"**Total:** {total} CVEs",
-        f"**Reproducible:** {len(reproducible)} ({len(reproducible)*100//total}%)\n",
+        f"**Total:** {total} CVEs "
+        f"(auto-collected: {len(auto)}, synthetic: {len(synthetic)})",
+        f"**Reproducible:** {len(reproducible)} ({pct}%)\n",
         "## Vulnerability Type Distribution\n",
         "| Type | Count |",
         "|------|-------|",
@@ -238,13 +319,23 @@ def generate_summary(vulns: list) -> str:
     for s, count in severities.most_common():
         lines.append(f"| {s} | {count} |")
 
+    if synthetic:
+        lines += [
+            "\n## Synthetic Scenarios (not real CVEs; counted separately)\n",
+            "| CVE | Type | CVSS | Package |",
+            "|-----|------|------|---------|",
+        ]
+        for v in sorted(synthetic, key=lambda x: x["cve_id"]):
+            lines.append(f"| {v['cve_id']} | {v['type']} | {v['cvss']} | {v['affected_package']} |")
+
     lines += [
         "\n## Reproducible Vulnerability List (for use by Environment Agent)\n",
-        "| CVE | Type | CVSS | Package |",
-        "|-----|------|------|---------|",
+        "| CVE | Type | CVSS | Package | Synthetic |",
+        "|-----|------|------|---------|-----------|",
     ]
     for v in sorted(reproducible, key=lambda x: -(x["cvss"] if x["cvss"] != "N/A" else 0)):
-        lines.append(f"| {v['cve_id']} | {v['type']} | {v['cvss']} | {v['affected_package']} |")
+        syn = "yes" if v.get("synthetic") else ""
+        lines.append(f"| {v['cve_id']} | {v['type']} | {v['cvss']} | {v['affected_package']} | {syn} |")
 
     return "\n".join(lines)
 
@@ -253,17 +344,24 @@ def generate_summary(vulns: list) -> str:
 
 def main():
     print(f"Reading: {INPUT}")
-    vulns = parse_report(INPUT)
-    print(f"Parsed {len(vulns)} CVEs")
+    auto = parse_report(INPUT)
+    print(f"Parsed {len(auto)} CVEs from raw report")
 
+    overrides = load_overrides(OVERRIDES)
+    print(f"Overrides: {len(overrides['add'])} add, {len(overrides['override'])} patch")
+
+    vulns = apply_overrides(auto, overrides)
+    synthetic = [v for v in vulns if v.get("synthetic")]
     reproducible = [v for v in vulns if v["reproducible"]]
+    print(f"Total after overrides: {len(vulns)} "
+          f"(auto {len(vulns) - len(synthetic)}, synthetic {len(synthetic)})")
     print(f"Reproducible: {len(reproducible)}")
 
-    # Output JSON
+    # Output JSON (deterministic)
     os.makedirs(os.path.dirname(OUTPUT_JSON), exist_ok=True)
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
-        json.dump(vulns, f, ensure_ascii=False, indent=2)
+    digest = write_deterministic_json(OUTPUT_JSON, vulns)
     print(f"JSON written to: {OUTPUT_JSON}")
+    print(f"sha256: {digest}")
 
     # Output summary
     summary = generate_summary(vulns)

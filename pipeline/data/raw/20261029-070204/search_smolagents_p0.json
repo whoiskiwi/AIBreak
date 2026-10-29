@@ -1,0 +1,887 @@
+{
+  "fetched_at": "2026-10-29T07:03:00.670515+00:00",
+  "source_url": "https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=smolagents&resultsPerPage=2000&startIndex=0",
+  "status_code": 200,
+  "data": {
+    "resultsPerPage": 5,
+    "startIndex": 0,
+    "totalResults": 5,
+    "format": "NVD_CVE",
+    "version": "2.0",
+    "timestamp": "2026-10-29T07:03:00.492",
+    "vulnerabilities": [
+      {
+        "cve": {
+          "id": "CVE-2025-9959",
+          "sourceIdentifier": "reefs@jfrog.com",
+          "published": "2025-09-03T17:15:35.737",
+          "lastModified": "2026-09-26T00:10:00.127",
+          "vulnStatus": "Deferred",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Incomplete validation of dunder attributes allows an attacker to escape from the Local Python execution environment sandbox, enforced by smolagents. The attack requires a Prompt Injection in order to trick the agent to create malicious code."
+            },
+            {
+              "lang": "es",
+              "value": "La validación incompleta de atributos dunder permite a un atacante escapar de la sandbox del entorno de ejecución de Python local, impuesta por smolagents. El ataque requiere una inyección de prompt para engañar al agente y que cree código malicioso."
+            }
+          ],
+          "affected": [
+            {
+              "source": "reefs@jfrog.com",
+              "affectedData": [
+                {
+                  "collectionURL": "https://pypi.org/project/pip",
+                  "packageName": "smolagents",
+                  "versions": [
+                    {
+                      "version": "0",
+                      "lessThan": "1.21.0",
+                      "versionType": "python",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV31": [
+              {
+                "source": "reefs@jfrog.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:H/A:L",
+                  "baseScore": 7.6,
+                  "baseSeverity": "HIGH",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "LOW",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "LOW"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 4.7
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2025-09-03T18:48:07.608510Z",
+                  "id": "CVE-2025-9959",
+                  "options": [
+                    {
+                      "exploitation": "none"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "partial"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "reefs@jfrog.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-94"
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/smolagents/pull/1551",
+              "source": "reefs@jfrog.com"
+            },
+            {
+              "url": "https://research.jfrog.com/vulnerabilities/smolagents-local-python-sandbox-escape-jfsa-2025-001434277/",
+              "source": "reefs@jfrog.com"
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2025-11844",
+          "sourceIdentifier": "security@huntr.dev",
+          "published": "2025-10-22T14:15:49.457",
+          "lastModified": "2026-10-08T11:10:00.250",
+          "vulnStatus": "Analyzed",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Hugging Face Smolagents version 1.20.0 contains an XPath injection vulnerability in the search_item_ctrl_f function located in src/smolagents/vision_web_browser.py. The function constructs an XPath query by directly concatenating user-supplied input into the XPath expression without proper sanitization or escaping. This allows an attacker to inject malicious XPath syntax that can alter the intended query logic. The vulnerability enables attackers to bypass search filters, access unintended DOM elements, and disrupt web automation workflows. This can lead to information disclosure, manipulation of AI agent interactions, and compromise the reliability of automated web tasks. The issue is fixed in version 1.22.0."
+            },
+            {
+              "lang": "es",
+              "value": "Hugging Face Smolagents versión 1.20.0 contiene una vulnerabilidad de inyección XPath en la función search_item_ctrl_f ubicada en src/smolagents/vision_web_browser.py. La función construye una consulta XPath al concatenar directamente la entrada proporcionada por el usuario en la expresión XPath sin una sanitización o escape adecuados. Esto permite a un atacante inyectar sintaxis XPath maliciosa que puede alterar la lógica de consulta prevista. La vulnerabilidad permite a los atacantes eludir los filtros de búsqueda, acceder a elementos DOM no deseados y perturbar los flujos de trabajo de automatización web. Esto puede conducir a la revelación de información, la manipulación de las interacciones de los agentes de IA y comprometer la fiabilidad de las tareas web automatizadas. El problema se corrige en la versión 1.22.0."
+            }
+          ],
+          "affected": [
+            {
+              "source": "security@huntr.dev",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "huggingface/smolagents",
+                  "versions": [
+                    {
+                      "version": "unspecified",
+                      "lessThan": "1.22.0",
+                      "versionType": "custom",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV30": [
+              {
+                "source": "security@huntr.dev",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.0",
+                  "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+                  "baseScore": 5.4,
+                  "baseSeverity": "MEDIUM",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "LOW",
+                  "integrityImpact": "LOW",
+                  "availabilityImpact": "NONE"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 2.5
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2025-10-22T14:07:23.770923Z",
+                  "id": "CVE-2025-11844",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "partial"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "security@huntr.dev",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-643"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:smolagents:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "1.20.0",
+                      "versionEndExcluding": "1.22.0",
+                      "matchCriteriaId": "4FBDA817-4B1A-4C1C-B28E-039793EE915C"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/huggingface/smolagents/commit/f570ed5e17999d4cf7d5e79c2830fbaefab8a794",
+              "source": "security@huntr.dev",
+              "tags": [
+                "Patch"
+              ]
+            },
+            {
+              "url": "https://huntr.com/bounties/01ab4405-9bca-4b26-b7a3-5ca1863a69b4",
+              "source": "security@huntr.dev",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory"
+              ]
+            },
+            {
+              "url": "https://huntr.com/bounties/01ab4405-9bca-4b26-b7a3-5ca1863a69b4",
+              "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2025-14931",
+          "sourceIdentifier": "zdi-disclosures@trendmicro.com",
+          "published": "2025-12-23T21:15:48.493",
+          "lastModified": "2026-10-19T22:10:00.130",
+          "vulnStatus": "Deferred",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "Hugging Face smolagents Remote Python Executor Deserialization of Untrusted Data Remote Code Execution Vulnerability. This vulnerability allows remote attackers to execute arbitrary code on affected installations of Hugging Face smolagents. Authentication is not required to exploit this vulnerability.\n\nThe specific flaw exists within the parsing of pickle data. The issue results from the lack of proper validation of user-supplied data, which can result in deserialization of untrusted data. An attacker can leverage this vulnerability to execute code in the context of the service account. Was ZDI-CAN-28312."
+            },
+            {
+              "lang": "es",
+              "value": "Vulnerabilidad de ejecución remota de código por deserialización de datos no confiables en el Ejecutor remoto de Python de Hugging Face smolagents. Esta vulnerabilidad permite a atacantes remotos ejecutar código arbitrario en instalaciones afectadas de Hugging Face smolagents. No se requiere autenticación para explotar esta vulnerabilidad.\\n\\nEl fallo específico existe dentro del análisis de datos pickle. El problema se debe a la falta de validación adecuada de los datos suministrados por el usuario, lo que puede provocar la deserialización de datos no confiables. Un atacante puede aprovechar esta vulnerabilidad para ejecutar código en el contexto de la cuenta de servicio. Fue ZDI-CAN-28312."
+            }
+          ],
+          "affected": [
+            {
+              "source": "zdi-disclosures@trendmicro.com",
+              "affectedData": [
+                {
+                  "vendor": "Hugging Face",
+                  "product": "smolagents",
+                  "defaultStatus": "unknown",
+                  "versions": [
+                    {
+                      "version": "1.22.0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV30": [
+              {
+                "source": "zdi-disclosures@trendmicro.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.0",
+                  "vectorString": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+                  "baseScore": 10.0,
+                  "baseSeverity": "CRITICAL",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "NONE",
+                  "scope": "CHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 3.9,
+                "impactScore": 6.0
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2025-12-26T14:34:12.847109Z",
+                  "id": "CVE-2025-14931",
+                  "options": [
+                    {
+                      "exploitation": "none"
+                    },
+                    {
+                      "automatable": "yes"
+                    },
+                    {
+                      "technicalImpact": "total"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "zdi-disclosures@trendmicro.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-502"
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://www.zerodayinitiative.com/advisories/ZDI-25-1143/",
+              "source": "zdi-disclosures@trendmicro.com"
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-2654",
+          "sourceIdentifier": "cna@vuldb.com",
+          "published": "2026-02-18T14:16:07.277",
+          "lastModified": "2026-06-17T10:31:28.450",
+          "vulnStatus": "Analyzed",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "A weakness has been identified in huggingface smolagents 1.24.0. Impacted is the function requests.get/requests.post of the component LocalPythonExecutor. Executing a manipulation can lead to server-side request forgery. It is possible to launch the attack remotely. The exploit has been made available to the public and could be used for attacks. The vendor was contacted early about this disclosure but did not respond in any way."
+            },
+            {
+              "lang": "es",
+              "value": "Se ha identificado una debilidad en huggingface smolagents 1.24.0. Afecta a la función requests.get/requests.post del componente LocalPythonExecutor. La ejecución de una manipulación puede conducir a una falsificación de petición del lado del servidor. Es posible lanzar el ataque remotamente. El exploit se ha puesto a disposición del público y podría ser utilizado para ataques. Se contactó al proveedor con antelación sobre esta divulgación, pero no respondió de ninguna manera."
+            }
+          ],
+          "affected": [
+            {
+              "source": "cna@vuldb.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "smolagents",
+                  "cpes": [
+                    "cpe:2.3:a:huggingface:smolagents:*:*:*:*:*:*:*:*"
+                  ],
+                  "modules": [
+                    "LocalPythonExecutor"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1.24.0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV40": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "4.0",
+                  "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N/E:P/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+                  "baseScore": 2.1,
+                  "baseSeverity": "LOW",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "attackRequirements": "NONE",
+                  "privilegesRequired": "LOW",
+                  "userInteraction": "NONE",
+                  "vulnConfidentialityImpact": "LOW",
+                  "vulnIntegrityImpact": "LOW",
+                  "vulnAvailabilityImpact": "LOW",
+                  "subConfidentialityImpact": "NONE",
+                  "subIntegrityImpact": "NONE",
+                  "subAvailabilityImpact": "NONE",
+                  "exploitMaturity": "PROOF_OF_CONCEPT",
+                  "confidentialityRequirement": "NOT_DEFINED",
+                  "integrityRequirement": "NOT_DEFINED",
+                  "availabilityRequirement": "NOT_DEFINED",
+                  "modifiedAttackVector": "NOT_DEFINED",
+                  "modifiedAttackComplexity": "NOT_DEFINED",
+                  "modifiedAttackRequirements": "NOT_DEFINED",
+                  "modifiedPrivilegesRequired": "NOT_DEFINED",
+                  "modifiedUserInteraction": "NOT_DEFINED",
+                  "modifiedVulnConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedVulnIntegrityImpact": "NOT_DEFINED",
+                  "modifiedVulnAvailabilityImpact": "NOT_DEFINED",
+                  "modifiedSubConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedSubIntegrityImpact": "NOT_DEFINED",
+                  "modifiedSubAvailabilityImpact": "NOT_DEFINED",
+                  "Safety": "NOT_DEFINED",
+                  "Automatable": "NOT_DEFINED",
+                  "Recovery": "NOT_DEFINED",
+                  "valueDensity": "NOT_DEFINED",
+                  "vulnerabilityResponseEffort": "NOT_DEFINED",
+                  "providerUrgency": "NOT_DEFINED"
+                }
+              }
+            ],
+            "cvssMetricV31": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
+                  "baseScore": 6.3,
+                  "baseSeverity": "MEDIUM",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "LOW",
+                  "userInteraction": "NONE",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "LOW",
+                  "integrityImpact": "LOW",
+                  "availabilityImpact": "LOW"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 3.4
+              },
+              {
+                "source": "nvd@nist.gov",
+                "type": "Primary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "baseScore": 9.8,
+                  "baseSeverity": "CRITICAL",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "NONE",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 3.9,
+                "impactScore": 5.9
+              }
+            ],
+            "cvssMetricV2": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "2.0",
+                  "vectorString": "AV:N/AC:L/Au:S/C:P/I:P/A:P",
+                  "baseScore": 6.5,
+                  "accessVector": "NETWORK",
+                  "accessComplexity": "LOW",
+                  "authentication": "SINGLE",
+                  "confidentialityImpact": "PARTIAL",
+                  "integrityImpact": "PARTIAL",
+                  "availabilityImpact": "PARTIAL"
+                },
+                "baseSeverity": "MEDIUM",
+                "exploitabilityScore": 8.0,
+                "impactScore": 6.4,
+                "acInsufInfo": false,
+                "obtainAllPrivilege": false,
+                "obtainUserPrivilege": false,
+                "obtainOtherPrivilege": false,
+                "userInteractionRequired": false
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-02-18T14:10:54.671299Z",
+                  "id": "CVE-2026-2654",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "partial"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-918"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:smolagents:*:*:*:*:*:*:*:*",
+                      "versionStartIncluding": "1.0.0",
+                      "versionEndIncluding": "1.24.0",
+                      "matchCriteriaId": "C2A50B65-5D81-4F1A-9144-55A307BE61FB"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://github.com/CH0ico/CVE_choco_smolagent/blob/main/report.md#proof-of-concept-execution",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory"
+              ]
+            },
+            {
+              "url": "https://github.com/CH0ico/CVE_choco_smolagent/tree/main",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Third Party Advisory"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?ctiid.346451",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?id.346451",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?submit.752774",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "cve": {
+          "id": "CVE-2026-4963",
+          "sourceIdentifier": "cna@vuldb.com",
+          "published": "2026-03-27T17:16:31.537",
+          "lastModified": "2026-10-26T21:10:00.170",
+          "vulnStatus": "Analyzed",
+          "cveTags": [],
+          "descriptions": [
+            {
+              "lang": "en",
+              "value": "A weakness has been identified in huggingface smolagents 1.25.0.dev0. This affects the function evaluate_augassign/evaluate_call/evaluate_with of the file src/smolagents/local_python_executor.py of the component Incomplete Fix CVE-2025-9959. This manipulation causes code injection. It is possible to initiate the attack remotely. The exploit has been made available to the public and could be used for attacks. The vendor was contacted early about this disclosure but did not respond in any way."
+            },
+            {
+              "lang": "es",
+              "value": "Se ha identificado una debilidad en huggingface smolagents 1.25.0.dev0. Esto afecta a la función evaluate_augassign/evaluate_call/evaluate_with del archivo src/smolagents/local_python_executor.py del componente Incomplete Fix CVE-2025-9959. Esta manipulación provoca inyección de código. Es posible iniciar el ataque remotamente. El exploit se ha hecho público y podría ser utilizado para ataques. Se contactó al proveedor con antelación sobre esta divulgación, pero no respondió de ninguna manera."
+            }
+          ],
+          "affected": [
+            {
+              "source": "cna@vuldb.com",
+              "affectedData": [
+                {
+                  "vendor": "huggingface",
+                  "product": "smolagents",
+                  "cpes": [
+                    "cpe:2.3:a:huggingface:smolagents:*:*:*:*:*:*:*:*"
+                  ],
+                  "modules": [
+                    "Incomplete Fix CVE-2025-9959"
+                  ],
+                  "versions": [
+                    {
+                      "version": "1.25.0.dev0",
+                      "status": "affected"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "metrics": {
+            "cvssMetricV40": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "4.0",
+                  "vectorString": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:L/VI:L/VA:L/SC:N/SI:N/SA:N/E:P/CR:X/IR:X/AR:X/MAV:X/MAC:X/MAT:X/MPR:X/MUI:X/MVC:X/MVI:X/MVA:X/MSC:X/MSI:X/MSA:X/S:X/AU:X/R:X/V:X/RE:X/U:X",
+                  "baseScore": 2.1,
+                  "baseSeverity": "LOW",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "attackRequirements": "NONE",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "PASSIVE",
+                  "vulnConfidentialityImpact": "LOW",
+                  "vulnIntegrityImpact": "LOW",
+                  "vulnAvailabilityImpact": "LOW",
+                  "subConfidentialityImpact": "NONE",
+                  "subIntegrityImpact": "NONE",
+                  "subAvailabilityImpact": "NONE",
+                  "exploitMaturity": "PROOF_OF_CONCEPT",
+                  "confidentialityRequirement": "NOT_DEFINED",
+                  "integrityRequirement": "NOT_DEFINED",
+                  "availabilityRequirement": "NOT_DEFINED",
+                  "modifiedAttackVector": "NOT_DEFINED",
+                  "modifiedAttackComplexity": "NOT_DEFINED",
+                  "modifiedAttackRequirements": "NOT_DEFINED",
+                  "modifiedPrivilegesRequired": "NOT_DEFINED",
+                  "modifiedUserInteraction": "NOT_DEFINED",
+                  "modifiedVulnConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedVulnIntegrityImpact": "NOT_DEFINED",
+                  "modifiedVulnAvailabilityImpact": "NOT_DEFINED",
+                  "modifiedSubConfidentialityImpact": "NOT_DEFINED",
+                  "modifiedSubIntegrityImpact": "NOT_DEFINED",
+                  "modifiedSubAvailabilityImpact": "NOT_DEFINED",
+                  "Safety": "NOT_DEFINED",
+                  "Automatable": "NOT_DEFINED",
+                  "Recovery": "NOT_DEFINED",
+                  "valueDensity": "NOT_DEFINED",
+                  "vulnerabilityResponseEffort": "NOT_DEFINED",
+                  "providerUrgency": "NOT_DEFINED"
+                }
+              }
+            ],
+            "cvssMetricV31": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:L",
+                  "baseScore": 6.3,
+                  "baseSeverity": "MEDIUM",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "REQUIRED",
+                  "scope": "UNCHANGED",
+                  "confidentialityImpact": "LOW",
+                  "integrityImpact": "LOW",
+                  "availabilityImpact": "LOW"
+                },
+                "exploitabilityScore": 2.8,
+                "impactScore": 3.4
+              },
+              {
+                "source": "nvd@nist.gov",
+                "type": "Primary",
+                "cvssData": {
+                  "version": "3.1",
+                  "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H",
+                  "baseScore": 10.0,
+                  "baseSeverity": "CRITICAL",
+                  "attackVector": "NETWORK",
+                  "attackComplexity": "LOW",
+                  "privilegesRequired": "NONE",
+                  "userInteraction": "NONE",
+                  "scope": "CHANGED",
+                  "confidentialityImpact": "HIGH",
+                  "integrityImpact": "HIGH",
+                  "availabilityImpact": "HIGH"
+                },
+                "exploitabilityScore": 3.9,
+                "impactScore": 6.0
+              }
+            ],
+            "cvssMetricV2": [
+              {
+                "source": "cna@vuldb.com",
+                "type": "Secondary",
+                "cvssData": {
+                  "version": "2.0",
+                  "vectorString": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+                  "baseScore": 7.5,
+                  "accessVector": "NETWORK",
+                  "accessComplexity": "LOW",
+                  "authentication": "NONE",
+                  "confidentialityImpact": "PARTIAL",
+                  "integrityImpact": "PARTIAL",
+                  "availabilityImpact": "PARTIAL"
+                },
+                "baseSeverity": "HIGH",
+                "exploitabilityScore": 10.0,
+                "impactScore": 6.4,
+                "acInsufInfo": false,
+                "obtainAllPrivilege": false,
+                "obtainUserPrivilege": false,
+                "obtainOtherPrivilege": false,
+                "userInteractionRequired": false
+              }
+            ],
+            "ssvcV203": [
+              {
+                "source": "134c704f-9b21-4f2e-91b3-4a467353bcc0",
+                "ssvcData": {
+                  "timestamp": "2026-03-31T13:32:07.450819Z",
+                  "id": "CVE-2026-4963",
+                  "options": [
+                    {
+                      "exploitation": "poc"
+                    },
+                    {
+                      "automatable": "no"
+                    },
+                    {
+                      "technicalImpact": "partial"
+                    }
+                  ],
+                  "role": "CISA Coordinator",
+                  "version": "2.0.3"
+                }
+              }
+            ]
+          },
+          "weaknesses": [
+            {
+              "source": "cna@vuldb.com",
+              "type": "Secondary",
+              "description": [
+                {
+                  "lang": "en",
+                  "value": "CWE-74"
+                },
+                {
+                  "lang": "en",
+                  "value": "CWE-94"
+                }
+              ]
+            }
+          ],
+          "configurations": [
+            {
+              "nodes": [
+                {
+                  "operator": "OR",
+                  "negate": false,
+                  "cpeMatch": [
+                    {
+                      "vulnerable": true,
+                      "criteria": "cpe:2.3:a:huggingface:smolagents:1.25.0:dev0:*:*:*:*:*:*",
+                      "matchCriteriaId": "61DF7A88-1F37-4EE0-925C-B1D7036DDFEF"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "references": [
+            {
+              "url": "https://gist.github.com/YLChen-007/35b7d46e892266a0ed6dbe57802858be",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory"
+              ]
+            },
+            {
+              "url": "https://gist.github.com/YLChen-007/7146f45960f79bc1e2976fed526e0a9b",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?ctiid.353840",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Permissions Required",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?id.353840",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?submit.777623",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?submit.777643",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            },
+            {
+              "url": "https://vuldb.com/?submit.777644",
+              "source": "cna@vuldb.com",
+              "tags": [
+                "Exploit",
+                "Third Party Advisory",
+                "VDB Entry"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
