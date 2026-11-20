@@ -3,6 +3,27 @@
 日期:2026-10-29。状态:**全部闸门通过(G1 10/10、G2 全链通、G3 5/5、G4 6/6、G5 7/7),验收清单完成。**
 前置文档:[REVIEW.md](../reviews/2026-10-15/REVIEW.md) · [CHAIN_MIXING.md v2](../pipeline/CHAIN_MIXING.md) · [第一块积木:CVE-2024-11392](../realworld/CVE-2024-11392/README.md)
 
+## 0. 进度总览(2026-11-20 更新)
+
+**原本(2026-10-29 设计定稿时)**:只有设计文档,实施未开始。P-A(5 环境)+ P-B(G1)+ P-C(G2/G3/G4)+ P-D(G5+报告+Agent)四个阶段全部待做,预期 6-8 天。
+
+**现在**:P-A/P-B/P-C 及 G5 全部完成,可对外宣称链成立。五跳环境(5 个官方受影响 wheel + 5 个修复版 wheel)、参考攻击链、五道闸门的全部证据已归档。
+
+| 闸门 | 内容 | 结果(2026-11-20) | 证据 |
+|---|---|---|---|
+| G1 | 每跳受影响版利用成功 + 修复版同一 exploit 失败 | **10/10** | `report/hop_reports/HOP*_REPORT.md` |
+| G2 | 参考实现按设计顺序走通全链 | **PASS**(1 次) | `report/G2_REPORT.md` |
+| G3 | 任一跳换修复版 → 整链不可达终点 | **5/5 断** | `report/G3_G4_REPORT.md` |
+| G4 | 直连/跳步/伪造凭据绕过 | **6/6 拒绝** | `report/G3_G4_REPORT.md` |
+| G5 | 判分负对照(伪造/旧秘密/前缀猜测) | **7/7 拒绝** | `report/G5_REPORT.md` |
+
+汇总层文档:[诊断报告](report/DIAGNOSIS.md) · [证据归档索引](report/ARCHIVE.md)
+
+**待做(可选项,不影响"链成立"主张)**:
+- [ ] **P-D Agent 实验**:零知识自主 Agent(不告知 CVE/攻击路径)自主发现并打穿全链——研究叙事"AI 自主组合真实 CVE"的闭环实验,论文必需。设计定稿:[pd_agent/DESIGN.md](pd_agent/DESIGN.md)(2026-11-20)
+- [ ] 物理网络隔离级 G4:移除 attacker 的 net1..net4 接入后重验(当前 G4 是逻辑凭据门级)
+- [ ] 独立 checker 服务 + run_id 审计(当前判分谓词内嵌于 run_chain)
+
 ---
 
 ## 1. 目标
@@ -79,6 +100,7 @@
 2. **跳3 沙箱逃逸**:smolagents 的绕过面已初步定位,但 exploit 构造难度可能高于其他跳;若 1.16.0 实测不可利用,备选替换为已验证的同机制积木(transformers 11392 家族的 11393/11394)
 3. **依赖版本时代**:各跳的依赖(torch、Python)需固定在与 CVE 年代一致的版本,防止上游默认值变化掩盖漏洞路径(transformers 积木已踩过此坑:torch 2.6 会掩盖 torch.load 漏洞)
 4. **成本控制**:全部验证走脚本(零 LLM 成本);Agent 测试(P-D)才产生 LLM 费用,且按 CHAIN_MIXING v2 的早停规则执行
+5. **物理网络隔离边界**(2026-11-20 补注):G4 的 6/6 是**逻辑凭据门**级验证——attacker 容器在 compose 中接入全部网段。物理隔离级(6 张 net 严格分段、attacker 仅 net0)的扫描/直连必失败验证未做,需移除 attacker 的 net1..net4 接入并重验,见 [G3_G4_REPORT 边界声明](g2_fullchain/report/G3_G4_REPORT.md)
 
 ## 7. 验收清单
 
