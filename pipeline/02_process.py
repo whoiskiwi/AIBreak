@@ -30,10 +30,10 @@ import os
 import hashlib
 from collections import Counter
 
-INPUT  = "/Users/chenqi/Desktop/HF_ML/pipeline/output/raw_report.md"
-OVERRIDES      = "/Users/chenqi/Desktop/HF_ML/pipeline/data/overrides.json"
-OUTPUT_JSON    = "/Users/chenqi/Desktop/HF_ML/pipeline/output/vulns.json"
-OUTPUT_SUMMARY = "/Users/chenqi/Desktop/HF_ML/pipeline/output/summary.md"
+INPUT  = "/Users/chenqi/Desktop/AIBreak/pipeline/output/raw_report.md"
+OVERRIDES      = "/Users/chenqi/Desktop/AIBreak/pipeline/data/overrides.json"
+OUTPUT_JSON    = "/Users/chenqi/Desktop/AIBreak/pipeline/output/vulns.json"
+OUTPUT_SUMMARY = "/Users/chenqi/Desktop/AIBreak/pipeline/output/summary.md"
 
 
 # ── Vulnerability type classification rules ───────────────────────────────

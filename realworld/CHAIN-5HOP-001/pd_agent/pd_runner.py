@@ -4,7 +4,7 @@ and early-stop (5 consecutive steps without a new artifact).
 
 Backend: Anthropic Messages API. By default routes through the Portkey gateway
 (virtual key: anthropic) using PORTKEY_API_KEY read from
-~/Desktop/HF_ML/pipeline/.env — Portkey sits behind Cloudflare, so a browser
+~/Desktop/AIBreak/pipeline/.env — Portkey sits behind Cloudflare, so a browser
 User-Agent is required. Set PD_BASE_URL to point at api.anthropic.com directly
 with ANTHROPIC_API_KEY, or any other Messages-compatible gateway.
 
@@ -29,7 +29,7 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
 
 def _load_portkey_key():
     """Read PORTKEY_API_KEY from pipeline/.env; never print it."""
-    p = os.path.expanduser("~/Desktop/HF_ML/pipeline/.env")
+    p = os.path.expanduser("~/Desktop/AIBreak/pipeline/.env")
     if os.path.exists(p):
         for line in open(p):
             line = line.strip()

@@ -5,11 +5,11 @@ smoke test (hop1 panel responses), and asks for the next tool call.
 Outputs the three replies side-by-side. Cost: a few cents total.
 
 Usage: python3 s1_model_probe.py
-Reads PORTKEY_API_KEY from ~/Desktop/HF_ML/pipeline/.env (never prints it).
+Reads PORTKEY_API_KEY from ~/Desktop/AIBreak/pipeline/.env (never prints it).
 """
 import json, os, re, sys, urllib.request, urllib.error
 
-ENV_PATH = os.path.expanduser("~/Desktop/HF_ML/pipeline/.env")
+ENV_PATH = os.path.expanduser("~/Desktop/AIBreak/pipeline/.env")
 def load_env():
     env = {}
     for line in open(ENV_PATH):

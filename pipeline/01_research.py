@@ -26,8 +26,8 @@ import requests
 COMPANY    = "Hugging Face"
 START_DATE = "2024-01-01"
 END_DATE   = "2026-12-31"
-OUTPUT     = "/Users/chenqi/Desktop/HF_ML/pipeline/output/raw_report.md"
-RAW_DIR    = "/Users/chenqi/Desktop/HF_ML/pipeline/data/raw"
+OUTPUT     = "/Users/chenqi/Desktop/AIBreak/pipeline/output/raw_report.md"
+RAW_DIR    = "/Users/chenqi/Desktop/AIBreak/pipeline/data/raw"
 
 # HuggingFace sub-projects — NVD registers by product name rather than company name, so each must be searched separately
 SUBPROJECTS = ["LeRobot", "smolagents", "diffusers", "tokenizers", "peft"]
