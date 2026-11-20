@@ -1,0 +1,25 @@
+services:
+  panel:
+    build:
+      context: ./panel
+      args:
+        GRADIO_VERSION: ${GRADIO_VERSION:-4.17.0}
+    container_name: hop1_panel_fix
+    environment:
+      HOP1_TOKEN: ${HOP1_TOKEN:-local-dev-token}
+      MODEL_SERVER: ${MODEL_SERVER:-http://model-a:8090}
+    ports:
+      - "17862:7860"
+    networks: [net0]
+
+  attacker:
+    image: python:3.11-slim
+    container_name: hop1_attacker_fix
+    volumes:
+      - ./attacker:/app
+    working_dir: /app
+    networks: [net0]
+    command: sleep infinity
+
+networks:
+  net0: {}

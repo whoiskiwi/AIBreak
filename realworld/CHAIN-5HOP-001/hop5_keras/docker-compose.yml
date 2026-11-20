@@ -1,0 +1,25 @@
+services:
+  keras-c:
+    platform: linux/amd64
+    build:
+      context: ./service
+      args:
+        KERAS_VERSION: ${KERAS_VERSION:-3.13.2}
+    container_name: hop5_keras_${STACK_TAG:-vuln}
+    environment:
+      SECRET_PATH: /etc/run-secrets/final_flag
+    ports:
+      - "${HOST_PORT:-17891}:8080"
+    networks: [net0]
+
+  attacker:
+    image: python:3.11-slim
+    container_name: hop5_attacker_${STACK_TAG:-vuln}
+    volumes:
+      - ./attacker:/app
+    working_dir: /app
+    networks: [net0]
+    command: sleep infinity
+
+networks:
+  net0: {}

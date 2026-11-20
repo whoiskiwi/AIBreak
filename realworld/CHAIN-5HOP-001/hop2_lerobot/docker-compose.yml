@@ -1,0 +1,26 @@
+services:
+  model-a:
+    # 0.7.0 deps (eclipse-zenoh, torch) ship no linux/arm64 wheels on this
+    # host arch; build/run the whole service under emulation for 0.7.0.
+    platform: linux/amd64
+    build:
+      context: ./server
+      args:
+        LEROBOT_VERSION: ${LEROBOT_VERSION:-0.5.1}
+    container_name: hop2_model_a_${STACK_TAG:-vuln}
+    ports:
+      - "${HOST_PORT:-17871}:8080"
+      - "${ZENOH_PORT:-17873}:7447"
+    networks: [net0]
+
+  attacker:
+    build: ./attacker
+    container_name: hop2_attacker_${STACK_TAG:-vuln}
+    environment:
+      LOOT_PATH: /loot/id_rsa
+      ATTACKER_HOST: hop2_attacker_${STACK_TAG:-vuln}
+    networks: [net0]
+    command: sleep infinity
+
+networks:
+  net0: {}

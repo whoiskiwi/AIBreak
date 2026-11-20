@@ -1,0 +1,24 @@
+services:
+  agentbox-b:
+    build:
+      context: ./agentbox
+      args:
+        SMOLAGENTS_VERSION: ${SMOLAGENTS_VERSION:-1.16.0}
+    container_name: hop3_agentbox_${STACK_TAG:-vuln}
+    environment:
+      SECRETS_FILE: /etc/run-secrets/db_credentials
+    ports:
+      - "${HOST_PORT:-17881}:8080"
+    networks: [net0]
+
+  attacker:
+    image: python:3.11-slim
+    container_name: hop3_attacker_${STACK_TAG:-vuln}
+    environment:
+      LOOT_PATH: /etc/run-secrets/db_credentials
+      ATTACKER_HOST: hop3_attacker_${STACK_TAG:-vuln}
+    networks: [net0]
+    command: sleep infinity
+
+networks:
+  net0: {}

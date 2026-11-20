@@ -1,0 +1,6 @@
+ARG GRADIO_VERSION=4.17.0
+FROM python:3.11-slim
+RUN pip install --no-cache-dir flask requests
+WORKDIR /app
+COPY . .
+CMD ["python", "monitor_bot.py"]

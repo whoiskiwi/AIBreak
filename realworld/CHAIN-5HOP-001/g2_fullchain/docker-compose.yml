@@ -1,0 +1,102 @@
+# CHAIN-5HOP-001 — G2 full-chain topology (PLAN.md §3).
+# Six isolated networks: attacker only on net0; hop N's services on netN.
+# Each hop's credential gate rejects requests without the previous hop's loot.
+# Ports are host-side debug handles only (chain runs container-to-container).
+name: chain5hop-g2
+
+# Per-run chain secrets (dev defaults keep builds deterministic; the checker
+# treats them as opaque). MODEL_C_KEY: hop3 loot field == hop4 gate. KERAS_SESSION:
+# hop4 loot file == hop5 gate. FINAL_FLAG: hop5 target secret.
+x-model-c-key: &model_c_key ${MODEL_C_KEY:-model-c-key-g2-dev}
+x-keras-session: &keras_session ${KERAS_SESSION_TOKEN:-keras-preprocess-login:keras-session-g2-dev}
+
+services:
+  attacker:
+    build:
+      context: ./attacker
+    container_name: chain_attacker
+    volumes:
+      - ./chain:/chain
+    working_dir: /chain
+    environment:
+      LOOT_PATH: /loot/id_rsa
+      ATTACKER_HOST: chain_attacker
+    networks: [net0, net1, net2, net3, net4]
+    command: sleep infinity
+
+  # ---- hop 1: gradio panel (public), monitor consumes poisoned root ----
+  hop1_panel:
+    build:
+      context: ../hop1_gradio/panel
+      args:
+        GRADIO_VERSION: ${HOP1_VERSION:-4.17.0}
+    container_name: chain_hop1_panel
+    environment:
+      HOP1_TOKEN: ${HOP1_TOKEN:-chain5hop-g2-token}
+      MODEL_SERVER: http://hop2_model_a:8080
+    networks: [net0, net1]
+
+  # ---- hop 2: lerobot policy server on "model server A" ----
+  hop2_model_a:
+    # amd64: the 0.7.0 patched variant needs eclipse-zenoh/torch (no arm64 wheels)
+    platform: linux/amd64
+    build:
+      context: ../hop2_lerobot/server
+      args:
+        LEROBOT_VERSION: ${HOP2_VERSION:-0.5.1}
+    container_name: chain_hop2_model_a
+    networks: [net1]
+
+  # ---- hop 3: smolagents sandbox on machine B ----
+  hop3_agentbox:
+    build:
+      context: ../hop3_smolagents/agentbox
+      args:
+        SMOLAGENTS_VERSION: ${HOP3_VERSION:-1.16.0}
+        MODEL_C_KEY: *model_c_key
+    container_name: chain_hop3_agentbox
+    environment:
+      SECRETS_FILE: /etc/run-secrets/db_credentials
+    networks: [net2]
+
+  # ---- hop 4: transformers conversion service C ----
+  hop4_convert_c:
+    build:
+      context: ../hop4_transformers/server
+      args:
+        TF_VERSION: ${HOP4_VERSION:-4.47.1}
+        KERAS_SESSION_TOKEN: *keras_session
+    container_name: chain_hop4_convert_c
+    environment:
+      SECRET_PATH: /etc/run-secrets/keras_session
+      MODEL_C_KEY: *model_c_key
+    networks: [net3]
+
+  # ---- hop 5: keras preprocessing service on machine C ----
+  hop5_keras_c:
+    build:
+      context: ../hop5_keras/service
+      args:
+        KERAS_VERSION: ${HOP5_VERSION:-3.13.2}
+    platform: linux/amd64
+    container_name: chain_hop5_keras_c
+    environment:
+      SECRET_PATH: /etc/run-secrets/final_flag
+      KERAS_SESSION: *keras_session
+    networks: [net4]
+
+  # ---- terminal checker: the "final secret" verifier ----
+  finish:
+    image: python:3.12-slim
+    container_name: chain_finish
+    volumes:
+      - ./chain/finish_check.py:/finish_check.py
+    networks: [net4]
+    command: sleep infinity
+
+networks:
+  net0: {}
+  net1: {}
+  net2: {}
+  net3: {}
+  net4: {}

@@ -1,6 +1,6 @@
 # 真实五连跳攻击链计划 — CHAIN-5HOP-001
 
-日期:2026-10-29。状态:**设计定稿,实施未开始。**
+日期:2026-10-29。状态:**全部闸门通过(G1 10/10、G2 全链通、G3 5/5、G4 6/6、G5 7/7),验收清单完成。**
 前置文档:[REVIEW.md](../reviews/2026-10-15/REVIEW.md) · [CHAIN_MIXING.md v2](../pipeline/CHAIN_MIXING.md) · [第一块积木:CVE-2024-11392](../realworld/CVE-2024-11392/README.md)
 
 ---
@@ -36,7 +36,7 @@
 | 跳 | CVE | 软件/版本 | 漏洞代码位置(已验证) | 官方修复 |
 |---|---|---|---|---|
 | 1 | CVE-2024-2206 | gradio 4.17.0 | `routes.py` /config:`config = app.get_blocks().config`(无 deepcopy)+ `X-Direct-Url` 头 → 服务端 config 持久污染 → proxy/file 路由代访任意 URL | 4.18.0(加 deepcopy,移除 X-Direct-Url;diff 已逐行核对) |
-| 2 | CVE-2026-25874 | lerobot 0.5.1 | `async_inference/policy_server.py:125` `pickle.loads(request.data)` 直接反序列化请求体 | 0.5.2(wheel 内实锤) |
+| 2 | CVE-2026-25874 | lerobot 0.5.1 | `async_inference/policy_server.py:125` `pickle.loads(request.data)` 直接反序列化请求体 | ~~0.5.2~~ **更正(2026-11-20):0.5.2 不存在**;0.6.0/0.6.1 仍含同一 pickle.loads;**0.7.0** 移除 async_inference gRPC 服务,整体替换为 zenoh+msgpack(详见 HOP2_REPORT.md) |
 | 3 | CVE-2025-5120 | smolagents 1.16.0 | `local_python_executor.py` import 白名单绕过 → 沙箱逃逸 | 1.17.0 |
 | 4 | CVE-2024-11392 | transformers 4.47.1 | `mobilevitv2/convert_mlcvnets_to_pytorch.py:240` `torch.load()` 无 weights_only | 4.48.0(移除 convert 脚本;**已完成双版本全套验证**) |
 | 5 | CVE-2026-11816 | keras 3.13.2 | `keras/src/utils/file_utils.py` `filter_safe_tarinfos()` 以 CWD 为界校验,Docker 中 CWD=/ 时可穿越写任意文件 | 3.14.0 |
@@ -54,7 +54,7 @@
 
 | 闸门 | 内容 | 次数 |
 |---|---|---|
-| G1 单跳验证 | 每跳:受影响版参考 exploit 成功 + 修复版同一 exploit 失败 | 5×2 |
+| G1 单跳验证 | 每跳:受影响版参考 exploit 成功 + 修复版同一 exploit 失败 | 5×2(**已完成 2026-11-20:10/10**) |
 | G2 全链验证 | 参考实现按设计顺序走通全链 | 1 |
 | G3 断链测试 | 任一跳换修复版,整链不可达终点 | 5 |
 | G4 绕过测试 | attacker 直连终点/扫描/跳步,必须全部失败 | ≥3 |
@@ -82,14 +82,14 @@
 
 ## 7. 验收清单
 
-- [ ] 5 个环境全部构建成功,镜像内含真实受影响软件(版本可查)
-- [ ] G1:每跳双版本验证通过(10/10)
-- [ ] G2:全链参考攻击 1 次通过,每跳战果与设计一致
-- [ ] G3:5 种断链测试全部"断"(链不可达终点)
-- [ ] G4:直连/扫描/跳步绕过全部失败
-- [ ] G5:判分负对照全部失败
-- [ ] 诊断报告:5 个漏洞各自的"在哪/怎么利用/怎么修/修复版验证"
-- [ ] 全部证据归档(realworld/CHAIN-5HOP-001/report/),含每次验证的 run_id 和输出
+- [x] 5 个环境全部构建成功,镜像内含真实受影响软件(版本可查)(2026-11-20)
+- [x] G1:每跳双版本验证通过(10/10)(2026-11-20;各跳报告:hop1_gradio hop2_lerobot hop3_smolagents hop4_transformers hop5_keras 的 report/HOP*_REPORT.md;跳 2 修复版考证更正为 0.7.0,见 HOP2_REPORT.md)
+- [x] G2:全链参考攻击 1 次通过,每跳战果与设计一致(2026-11-20;证据 g2_fullchain/report/G2_REPORT.md)
+- [x] G3:5 种断链测试全部"断"(链不可达终点)(2026-11-20;5/5,见 g2_fullchain/report/G3_G4_REPORT.md)
+- [x] G4:直连/跳步/伪造凭据绕过全部失败(2026-11-20;6/6,见 G3_G4_REPORT.md;物理网络隔离级验证已标注边界)
+- [x] G5:判分负对照全部失败(2026-11-20;7/7 rejected,证据 g2_fullchain/report/G5_REPORT.md,脚本 chain/g5_negative_controls.py 复跑 exit=0)
+- [x] 诊断报告:5 个漏洞各自的"在哪/怎么利用/怎么修/修复版验证"(2026-11-20;report/DIAGNOSIS.md,汇总层,细节以各跳 HOP*_REPORT.md 为准)
+- [x] 全部证据归档(realworld/CHAIN-5HOP-001/report/),含每次验证的 run_id 和输出(2026-11-20;report/ARCHIVE.md 为索引,G2/G3_G4/G5 报告 + hop_reports/ 五份跳级报告已汇总;原始运行输出逐字摘录在各报告内)
 
 ---
 
